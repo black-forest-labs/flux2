@@ -84,7 +84,7 @@ Additionally, we are recommending implementing a solution to mark the metadata o
 
 ## 🧨 Lower VRAM diffusers example
 
-The below example should run on a RTX 4090.
+The below example should run on a RTX 4090. For more examples check the [diffusers quantization guide here](docs/flux2_dev_hf.md)
 
 ```python
 import torch
