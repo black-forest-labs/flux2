@@ -60,7 +60,7 @@ prompt = "Realistic macro photograph of a hermit crab using a soda can as its sh
 #cat_image = load_image("https://huggingface.co/spaces/zerogpu-aoti/FLUX.1-Kontext-Dev-fp8-dynamic/resolve/main/cat.png")
 image = pipe(
     prompt_embeds=remote_text_encoder(prompt),
-    #image=load_image(cat_image) #optional image input
+    #image=[cat_image] #optional multi-image input
     generator=torch.Generator(device=device).manual_seed(42),
     num_inference_steps=50, #28 steps can be a good trade-off
     guidance_scale=4,
