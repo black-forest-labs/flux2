@@ -108,7 +108,7 @@ To understand how different quantizations affect the model's abilities and quali
 ## 💿 More VRAM (80G+)
 
 Even an H100 can't hold the text-encoder, transormer and VAE at the same time. However, as they each fit individually, it is a matter of activating the `pipe.enable_model_cpu_offload()`
-For H200, B200 or larger carts, everything fits.
+For H200, B200 or larger cards, everything fits.
 
 ```py
 import torch
