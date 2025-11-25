@@ -8,7 +8,7 @@ Install diffusers from `main`
 pip install git+https://github.com/huggingface/diffusers.git
 ```
 
-After accepting the gating on this repository, login with Hugging Face on your terminal
+After accepting the gating on the [FLUX.2-dev repository](https://huggingface.co/black-forest-labs/FLUX.2-dev), login with Hugging Face on your terminal
 ```sh
 hf auth login
 ```
@@ -52,14 +52,15 @@ def remote_text_encoder(prompts):
     return prompt_embeds.to(device)
 
 pipe = Flux2Pipeline.from_pretrained(
-    repo_id, transformer=transformer, text_encoder=None, torch_dtype=torch_dtype
+    repo_id, text_encoder=None, torch_dtype=torch_dtype
 ).to(device)
 
 prompt = "Realistic macro photograph of a hermit crab using a soda can as its shell, partially emerging from the can, captured with sharp detail and natural colors, on a sunlit beach with soft shadows and a shallow depth of field, with blurred ocean waves in the background. The can has the text `BFL Diffusers` on it and it has a color gradient that start with #FF5733 at the top and transitions to #33FF57 at the bottom."
 
+#cat_image = load_image("https://huggingface.co/spaces/zerogpu-aoti/FLUX.1-Kontext-Dev-fp8-dynamic/resolve/main/cat.png")
 image = pipe(
     prompt_embeds=remote_text_encoder(prompt),
-    #image=load_image("https://huggingface.co/spaces/zerogpu-aoti/FLUX.1-Kontext-Dev-fp8-dynamic/resolve/main/cat.png") #optional image input
+    #image=load_image(cat_image) #optional image input
     generator=torch.Generator(device=device).manual_seed(42),
     num_inference_steps=50, #28 steps can be a good trade-off
     guidance_scale=4,
@@ -77,28 +78,22 @@ The text-encoder is offloaded from VRAM for the transformer to run with `pipe.en
 import torch
 from transformers import Mistral3ForConditionalGeneration
 from diffusers import Flux2Pipeline, Flux2Transformer2DModel
+from diffusers.utils import load_image
 
 repo_id = "diffusers/FLUX.2-dev-bnb-4bit"
 device = "cuda:0"
 torch_dtype = torch.bfloat16
 
-transformer = Flux2Transformer2DModel.from_pretrained(
-    repo_id, subfolder="transformer", torch_dtype=torch_dtype, device_map="cpu"
-)
-text_encoder = Mistral3ForConditionalGeneration.from_pretrained(
-    repo_id, subfolder="text_encoder", dtype=torch_dtype, device_map="cpu"
-)
-
 pipe = Flux2Pipeline.from_pretrained(
-    repo_id, transformer=transformer, text_encoder=text_encoder, torch_dtype=torch_dtype
+    repo_id, torch_dtype=torch_dtype
 )
 pipe.enable_model_cpu_offload()
 
 prompt = "Realistic macro photograph of a hermit crab using a soda can as its shell, partially emerging from the can, captured with sharp detail and natural colors, on a sunlit beach with soft shadows and a shallow depth of field, with blurred ocean waves in the background. The can has the text `BFL + Diffusers` on it and it has a color gradient that start with #FF5733 at the top and transitions to #33FF57 at the bottom."
-
+#cat_image = load_image("https://huggingface.co/spaces/zerogpu-aoti/FLUX.1-Kontext-Dev-fp8-dynamic/resolve/main/cat.png")
 image = pipe(
     prompt=prompt,
-    #image=[load_image("https://huggingface.co/spaces/zerogpu-aoti/FLUX.1-Kontext-Dev-fp8-dynamic/resolve/main/cat.png")] #multi-image input
+    #image=[cat_image] #multi-image input
     generator=torch.Generator(device=device).manual_seed(42),
     num_inference_steps=50,
     guidance_scale=4,
@@ -113,12 +108,13 @@ To understand how different quantizations affect the model's abilities and quali
 
 ## 💿 More VRAM (80G+)
 
-Even an H100 can't hold the text-encoder, transormer and VAE at the same time. However, here it is a matter of activating the `pipe.enable_model_cpu_offload()`
-And for H200, B200 or larger carts, everything fits.
+Even an H100 can't hold the text-encoder, transormer and VAE at the same time. However, as they each fit individually, it is a matter of activating the `pipe.enable_model_cpu_offload()`
+For H200, B200 or larger carts, everything fits.
 
 ```py
 import torch
 from diffusers import Flux2Pipeline
+from diffusers.utils import load_image
 
 repo_id = "black-forest-labs/FLUX.2-dev"
 device = "cuda:0"
@@ -127,13 +123,14 @@ torch_dtype = torch.bfloat16
 pipe = Flux2Pipeline.from_pretrained(
     repo_id, torch_dtype=torch_dtype
 )
-pipe.enable_model_cpu_offload() #deactivate for >80G VRAM carts like H200, B200, etc. and do a `pipe.to(device)` instead
+pipe.enable_model_cpu_offload() #no need to do cpu offload for >80G VRAM carts like H200, B200, etc. and do a `pipe.to(device)` instead
 
 prompt = "Realistic macro photograph of a hermit crab using a soda can as its shell, partially emerging from the can, captured with sharp detail and natural colors, on a sunlit beach with soft shadows and a shallow depth of field, with blurred ocean waves in the background. The can has the text `BFL Diffusers` on it and it has a color gradient that start with #FF5733 at the top and transitions to #33FF57 at the bottom."
 
+#cat_image = load_image("https://huggingface.co/spaces/zerogpu-aoti/FLUX.1-Kontext-Dev-fp8-dynamic/resolve/main/cat.png")
 image = pipe(
     prompt=prompt,
-    #image=[load_image("https://huggingface.co/spaces/zerogpu-aoti/FLUX.1-Kontext-Dev-fp8-dynamic/resolve/main/cat.png")] #multi-image input
+    #image=[cat_image] #multi-image input
     generator=torch.Generator(device=device).manual_seed(42),
     num_inference_steps=50,
     guidance_scale=4,
@@ -147,6 +144,7 @@ image.save("flux2_output.png")
 ```py
 import torch
 from diffusers import Flux2Pipeline, Flux2Transformer2DModel
+from diffusers.utils import load_image
 from huggingface_hub import get_token
 import requests
 import io
@@ -175,9 +173,10 @@ pipe = Flux2Pipeline.from_pretrained(
 
 prompt = "Realistic macro photograph of a hermit crab using a soda can as its shell, partially emerging from the can, captured with sharp detail and natural colors, on a sunlit beach with soft shadows and a shallow depth of field, with blurred ocean waves in the background. The can has the text `BFL + Diffusers` on it and it has a color gradient that start with #FF5733 at the top and transitions to #33FF57 at the bottom."
 
+#cat_image = load_image("https://huggingface.co/spaces/zerogpu-aoti/FLUX.1-Kontext-Dev-fp8-dynamic/resolve/main/cat.png")
 image = pipe(
     prompt_embeds=remote_text_encoder(prompt),
-    #image=[load_image("https://huggingface.co/spaces/zerogpu-aoti/FLUX.1-Kontext-Dev-fp8-dynamic/resolve/main/cat.png")] #optional multi-image input
+    #image=[cat_image] #optional multi-image input
     generator=torch.Generator(device=device).manual_seed(42),
     num_inference_steps=50,
     guidance_scale=4,
