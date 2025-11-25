@@ -28,13 +28,13 @@ The text-embeddings are calculated in bf16 in the cloud and you only load the tr
 
 ```py
 import torch
-from diffusers import Flux2Pipeline, Flux2Transformer2DModel
+from diffusers import Flux2Pipeline
 from diffusers.utils import load_image
 from huggingface_hub import get_token
 import requests
 import io
 
-repo_id = "diffusers/FLUX.2-dev-bnb-4bit"
+repo_id = "diffusers/FLUX.2-dev-bnb-4bit" #quantized text-encoder and DiT. VAE still in bf16
 device = "cuda:0"
 torch_dtype = torch.bfloat16
 
@@ -76,11 +76,10 @@ The text-encoder is offloaded from VRAM for the transformer to run with `pipe.en
 
 ```py
 import torch
-from transformers import Mistral3ForConditionalGeneration
-from diffusers import Flux2Pipeline, Flux2Transformer2DModel
+from diffusers import Flux2Pipeline
 from diffusers.utils import load_image
 
-repo_id = "diffusers/FLUX.2-dev-bnb-4bit"
+repo_id = "diffusers/FLUX.2-dev-bnb-4bit" #quantized text-encoder and DiT. VAE still in bf16
 device = "cuda:0"
 torch_dtype = torch.bfloat16
 
@@ -143,7 +142,7 @@ image.save("flux2_output.png")
 `pipe.enable_model_cpu_offload()` slows you down a bit. You can move as fast as possible on the H100 with the remote text-encoder 
 ```py
 import torch
-from diffusers import Flux2Pipeline, Flux2Transformer2DModel
+from diffusers import Flux2Pipeline
 from diffusers.utils import load_image
 from huggingface_hub import get_token
 import requests
