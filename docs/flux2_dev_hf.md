@@ -2,10 +2,11 @@
 
 ## Getting started 
 
-Install diffusers from `main` 
+Install diffusers from `main` and upgrade your `transformers`, `accelerate` and `bitsandbytes` dependencies to latest
 
 ```sh
 pip install git+https://github.com/huggingface/diffusers.git
+pip install --upgrade transformers accelerate bitsandbytes
 ```
 
 After accepting the gating on the [FLUX.2-dev repository](https://huggingface.co/black-forest-labs/FLUX.2-dev), login with Hugging Face on your terminal
