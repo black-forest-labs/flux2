@@ -102,7 +102,7 @@ image = pipe(
 image.save("flux2_output.png")
 ``` 
 
-To understand how different quantizations affect the model's abilities and quality, access the [FLUX.2 on diffusers](https://huggingface.co/blog/flux2) blog
+To understand how different quantizations affect the model's abilities and quality, access the [FLUX.2 on diffusers](https://huggingface.co/blog/flux-2) blog
 
 ---
 
@@ -187,4 +187,4 @@ image.save("flux2_output.png")
 
 ## 🧮 Other VRAM sizes
 
-If you have different GPU sizes, you can experiment with different quantizations, for example, for 40-48G VRAM GPUs, (8-bit) quantization instead of 4-bit can be a good trade-off. You can learn more on the [diffusers FLUX.2 release blog](https://huggingface.co/blog/flux2)
+If you have different GPU sizes, you can experiment with different quantizations, for example, for 40-48G VRAM GPUs, (8-bit) quantization instead of 4-bit can be a good trade-off. You can learn more on the [diffusers FLUX.2 release blog](https://huggingface.co/blog/flux-2)
