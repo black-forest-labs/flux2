@@ -88,7 +88,7 @@ The below example should run on a RTX 4090. For more examples check the [diffuse
 
 ```python
 import torch
-from diffusers import Flux2Pipeline, Flux2Transformer2DModel
+from diffusers import Flux2Pipeline
 from diffusers.utils import load_image
 from huggingface_hub import get_token
 import requests
@@ -112,7 +112,7 @@ def remote_text_encoder(prompts):
     return prompt_embeds.to(device)
 
 pipe = Flux2Pipeline.from_pretrained(
-    repo_id, transformer=transformer, text_encoder=None, torch_dtype=torch_dtype
+    repo_id, text_encoder=None, torch_dtype=torch_dtype
 ).to(device)
 
 prompt = "Realistic macro photograph of a hermit crab using a soda can as its shell, partially emerging from the can, captured with sharp detail and natural colors, on a sunlit beach with soft shadows and a shallow depth of field, with blurred ocean waves in the background. The can has the text `BFL Diffusers` on it and it has a color gradient that start with #FF5733 at the top and transitions to #33FF57 at the bottom."
