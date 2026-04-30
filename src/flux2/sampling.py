@@ -299,7 +299,11 @@ def denoise(
             ctx_ids=txt_ids,
             guidance=guidance_vec,
         )
-        if img_input_ids is not None:
+        # Trim off the conditioning sequence we concatenated above.
+        # `img_input_ids` is always non-None here (img_ids is required),
+        # so the previous check was a tautology — gate on the actual
+        # signal that we concatenated, matching denoise_cached below.
+        if img_cond_seq is not None:
             pred = pred[:, : img.shape[1]]
 
         img = img + (t_prev - t_curr) * pred
