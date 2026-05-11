@@ -299,7 +299,11 @@ def denoise(
             ctx_ids=txt_ids,
             guidance=guidance_vec,
         )
-        if img_input_ids is not None:
+        # Trim off the conditioning sequence we concatenated above.
+        # `img_input_ids` is always non-None here (img_ids is required),
+        # so the previous check was a tautology, gate on the actual
+        # signal that we concatenated, matching denoise_cached below.
+        if img_cond_seq is not None:
             pred = pred[:, : img.shape[1]]
 
         img = img + (t_prev - t_curr) * pred
@@ -320,8 +324,8 @@ def denoise_cached(
 ):
     """Denoise with KV caching for reference image tokens.
 
-    Step 0: model.forward_kv_extract() — full pass with ref tokens, extracts KV cache.
-    Steps 1+: model.forward_kv_cached() — uses cached ref KV, no ref tokens in input.
+    Step 0: model.forward_kv_extract(), full pass with ref tokens, extracts KV cache.
+    Steps 1+: model.forward_kv_cached(), uses cached ref KV, no ref tokens in input.
     """
     guidance_vec = torch.full((img.shape[0],), guidance, device=img.device, dtype=img.dtype)
 
