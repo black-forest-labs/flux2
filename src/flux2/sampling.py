@@ -299,7 +299,7 @@ def denoise(
             ctx_ids=txt_ids,
             guidance=guidance_vec,
         )
-        if img_input_ids is not None:
+        if img_cond_seq is not None:
             pred = pred[:, : img.shape[1]]
 
         img = img + (t_prev - t_curr) * pred
