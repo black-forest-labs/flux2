@@ -373,7 +373,7 @@ class Qwen3Embedder(nn.Module):
 
         self.model = AutoModelForCausalLM.from_pretrained(
             model_spec,
-            torch_dtype=None,
+            torch_dtype=torch.bfloat16,
             device_map=str(device),
         )
 
@@ -433,4 +433,4 @@ def load_mistral_small_embedder(device: str | torch.device = "cuda") -> Mistral3
 
 
 def load_qwen3_embedder(variant: str, device: str | torch.device = "cuda"):
-    return Qwen3Embedder(model_spec=f"Qwen/Qwen3-{variant}-FP8", device=device)
+    return Qwen3Embedder(model_spec=f"Qwen/Qwen3-{variant}", device=device)

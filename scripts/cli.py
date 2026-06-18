@@ -281,7 +281,7 @@ def main(
     ), f"{model_name} is not available, choose from {FLUX2_MODEL_INFO.keys()}"
 
     model_info = FLUX2_MODEL_INFO[model_name]
-    torch_device = torch.device("cuda")
+    torch_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     text_encoder = load_text_encoder(model_name, device=torch_device)
     if "klein" in model_name:
@@ -579,8 +579,8 @@ def main(
 
                 # Create noise
                 shape = (1, 128, height // 16, width // 16)
-                generator = torch.Generator(device="cuda").manual_seed(seed)
-                randn = torch.randn(shape, generator=generator, dtype=torch.bfloat16, device="cuda")
+                generator = torch.Generator(device=str(torch_device)).manual_seed(seed)
+                randn = torch.randn(shape, generator=generator, dtype=torch.bfloat16, device=str(torch_device))
                 x, x_ids = batched_prc_img(randn)
 
                 timesteps = get_schedule(cfg.num_steps, x.shape[1])
