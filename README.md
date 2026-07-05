@@ -108,7 +108,7 @@ See the [upsampling guide](docs/flux2_with_prompt_upsampling.md) for additional 
 
 ## `FLUX.2` autoencoder
 
-The FLUX.2 autoencoder has considerably improved over the [FLUX.1 autoencoder](https://huggingface.co/black-forest-labs/FLUX.1-dev/blob/main/ae.safetensors). The autoencoder is released under [Apache 2.0](https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md) and can be found [here](https://huggingface.co/black-forest-labs/FLUX.2-dev/blob/main/ae.safetensors). For more information, see our [technical blogpost](https://bfl.ai/research/representation-comparison).
+The FLUX.2 autoencoder has considerably improved over the [FLUX.1 autoencoder](https://huggingface.co/black-forest-labs/FLUX.1-dev/tree/main). The autoencoder is released under [Apache 2.0](https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md) and can be found as `ae.safetensors` in the [FLUX.2 [dev] file listing](https://huggingface.co/black-forest-labs/FLUX.2-dev/tree/main). For more information, see our [technical blogpost](https://bfl.ai/research/representation-comparison).
 
 ## Local installation
 
