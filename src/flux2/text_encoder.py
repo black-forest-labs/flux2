@@ -368,12 +368,13 @@ class Qwen3Embedder(nn.Module):
         self,
         model_spec: str,
         device: str | torch.device = "cuda",
+        torch_dtype: torch.dtype | None = None,
     ):
         super().__init__()
 
         self.model = AutoModelForCausalLM.from_pretrained(
             model_spec,
-            torch_dtype=None,
+            torch_dtype=torch_dtype,
             device_map=str(device),
         )
 
@@ -432,5 +433,28 @@ def load_mistral_small_embedder(device: str | torch.device = "cuda") -> Mistral3
     return Mistral3SmallEmbedder().to(device)
 
 
+def _supports_fp8_quantization(device: str | torch.device) -> bool:
+    """FP8 Qwen3 checkpoints require NVIDIA compute capability >= 8.9 (e.g. 4090/H100)."""
+    if not torch.cuda.is_available():
+        return False
+    torch_device = torch.device(device)
+    if torch_device.type != "cuda":
+        return False
+    index = torch_device.index if torch_device.index is not None else torch.cuda.current_device()
+    return torch.cuda.get_device_capability(index) >= (8, 9)
+
+
 def load_qwen3_embedder(variant: str, device: str | torch.device = "cuda"):
-    return Qwen3Embedder(model_spec=f"Qwen/Qwen3-{variant}-FP8", device=device)
+    # Prefer FP8 when the GPU supports it; otherwise load BF16 weights so consumer
+    # cards (e.g. RTX 3090, sm_86) can still run Klein — see issue #54.
+    if _supports_fp8_quantization(device):
+        model_spec = f"Qwen/Qwen3-{variant}-FP8"
+        torch_dtype = None  # FP8 checkpoint carries its own quantized dtypes
+    else:
+        model_spec = f"Qwen/Qwen3-{variant}"
+        torch_dtype = torch.bfloat16
+        print(
+            f"FP8 Qwen3 requires compute capability >= 8.9; "
+            f"loading BF16 checkpoint {model_spec} instead."
+        )
+    return Qwen3Embedder(model_spec=model_spec, device=device, torch_dtype=torch_dtype)
